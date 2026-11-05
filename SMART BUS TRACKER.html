@@ -1,0 +1,2680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Smart APSRTC CSP</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#eef2f7;
+    color:#17202a;
+}
+
+/* ================= HEADER ================= */
+
+header{
+    background:linear-gradient(135deg,#075e54,#128c7e);
+    color:white;
+    padding:18px 25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+header h1{
+    margin:0;
+    font-size:25px;
+}
+
+header p{
+    margin:6px 0;
+}
+
+.clock{
+    font-size:13px;
+}
+
+.network{
+    background:#064e46;
+    padding:10px 16px;
+    border-radius:20px;
+}
+
+/* ================= CONTAINER ================= */
+
+.container{
+    max-width:1500px;
+    margin:auto;
+    padding:20px;
+}
+
+/* ================= STAT CARDS ================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:
+    repeat(7,1fr);
+
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.stat{
+    background:white;
+    padding:16px;
+    border-radius:12px;
+
+    box-shadow:
+    0 2px 8px rgba(0,0,0,.08);
+}
+
+.stat h4{
+    margin:0;
+    color:#667085;
+    font-size:12px;
+}
+
+.value{
+    font-size:25px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+/* ================= CONTROLS ================= */
+
+.controls{
+    background:white;
+    padding:15px;
+    border-radius:12px;
+    margin-bottom:20px;
+
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+input,
+select{
+    padding:11px;
+
+    border:1px solid #d1d5db;
+    border-radius:8px;
+
+    font-size:14px;
+}
+
+button{
+    border:none;
+    padding:11px 15px;
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+}
+
+.green{
+    background:#075e54;
+    color:white;
+}
+
+.blue{
+    background:#1565c0;
+    color:white;
+}
+
+.red{
+    background:#dc2626;
+    color:white;
+}
+
+.orange{
+    background:#f59e0b;
+    color:white;
+}
+
+.gray{
+    background:#64748b;
+    color:white;
+}
+
+/* ================= DESTINATION ================= */
+
+.destination{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    margin-bottom:20px;
+
+    box-shadow:
+    0 2px 8px rgba(0,0,0,.08);
+}
+
+.destination h2{
+    margin-top:0;
+}
+
+.destination-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.destination-row input{
+    flex:1;
+    min-width:250px;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+    display:grid;
+
+    grid-template-columns:
+    2fr 1fr;
+
+    gap:20px;
+}
+
+/* ================= MAP ================= */
+
+.map{
+    height:600px;
+
+    position:relative;
+
+    overflow:hidden;
+
+    border-radius:15px;
+
+    background:#cce8c9;
+}
+
+/* Roads */
+
+.road{
+    position:absolute;
+
+    height:13px;
+
+    width:120%;
+
+    left:-10%;
+    top:50%;
+
+    background:#d1d5db;
+
+    transform:rotate(-12deg);
+}
+
+.road2{
+    position:absolute;
+
+    height:11px;
+
+    width:120%;
+
+    left:-10%;
+    top:35%;
+
+    background:#d1d5db;
+
+    transform:rotate(20deg);
+}
+
+.road3{
+    position:absolute;
+
+    height:9px;
+
+    width:120%;
+
+    left:-10%;
+    top:70%;
+
+    background:#d1d5db;
+
+    transform:rotate(5deg);
+}
+
+/* Route */
+
+.route{
+    position:absolute;
+
+    height:8px;
+
+    width:82%;
+
+    left:9%;
+    top:55%;
+
+    background:#1565c0;
+
+    border-radius:10px;
+
+    transform:rotate(-10deg);
+
+    box-shadow:
+    0 0 0 4px
+    rgba(21,101,192,.15);
+}
+
+/* Map title */
+
+.map-title{
+    position:absolute;
+
+    top:15px;
+    left:15px;
+
+    z-index:100;
+
+    background:white;
+
+    padding:10px 15px;
+
+    border-radius:8px;
+
+    font-weight:bold;
+
+    box-shadow:
+    0 2px 7px rgba(0,0,0,.2);
+}
+
+/* ================= STOPS ================= */
+
+.stop{
+    position:absolute;
+
+    width:18px;
+    height:18px;
+
+    background:white;
+
+    border:
+    4px solid #1565c0;
+
+    border-radius:50%;
+
+    z-index:10;
+}
+
+.stop-label{
+    position:absolute;
+
+    top:22px;
+    left:-35px;
+
+    white-space:nowrap;
+
+    font-size:11px;
+
+    font-weight:bold;
+}
+
+/* ================= USER LOCATION ================= */
+
+.user-location{
+    position:absolute;
+
+    width:22px;
+    height:22px;
+
+    background:#2563eb;
+
+    border:
+    4px solid white;
+
+    border-radius:50%;
+
+    z-index:50;
+
+    box-shadow:
+    0 0 0 8px
+    rgba(37,99,235,.2),
+
+    0 2px 8px
+    rgba(0,0,0,.3);
+
+    display:none;
+}
+
+/* ================= BUS ================= */
+
+.bus-marker{
+    position:absolute;
+
+    padding:7px 10px;
+
+    background:#16a34a;
+
+    color:white;
+
+    border-radius:8px;
+
+    font-size:12px;
+
+    font-weight:bold;
+
+    z-index:30;
+
+    transition:
+    left 1s linear,
+    top 1s linear;
+
+    box-shadow:
+    0 3px 8px
+    rgba(0,0,0,.3);
+
+    cursor:pointer;
+}
+
+.bus-marker.delayed{
+    background:#f59e0b;
+}
+
+.bus-marker.offline{
+    background:#dc2626;
+}
+
+/* ================= PANEL ================= */
+
+.panel{
+    background:white;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    box-shadow:
+    0 2px 8px
+    rgba(0,0,0,.08);
+
+    max-height:600px;
+
+    overflow:auto;
+}
+
+.panel h2{
+    margin-top:0;
+}
+
+/* ================= BUS CARD ================= */
+
+.bus-card{
+    padding:13px 0;
+
+    border-bottom:
+    1px solid #eee;
+}
+
+.bus-card:last-child{
+    border-bottom:none;
+}
+
+.bus-title{
+    font-weight:bold;
+    font-size:16px;
+}
+
+.badge{
+    float:right;
+
+    padding:4px 8px;
+
+    border-radius:12px;
+
+    font-size:10px;
+}
+
+.active{
+    background:#dcfce7;
+    color:#166534;
+}
+
+.delayed{
+    background:#fef3c7;
+    color:#92400e;
+}
+
+.offline{
+    background:#fee2e2;
+    color:#991b1b;
+}
+
+/* ================= PROGRESS ================= */
+
+.progress{
+    width:100%;
+    height:8px;
+
+    background:#e5e7eb;
+
+    border-radius:10px;
+
+    overflow:hidden;
+}
+
+.progress-bar{
+    height:100%;
+
+    background:#16a34a;
+}
+
+/* ================= BOXES ================= */
+
+.lower{
+    display:grid;
+
+    grid-template-columns:
+    repeat(3,1fr);
+
+    gap:20px;
+
+    margin-top:20px;
+}
+
+.box{
+    background:white;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    box-shadow:
+    0 2px 8px
+    rgba(0,0,0,.08);
+}
+
+.box h2{
+    margin-top:0;
+}
+
+/* ================= MESSAGES ================= */
+
+.message{
+    background:#f1f5f9;
+
+    padding:12px;
+
+    border-radius:8px;
+
+    margin-bottom:10px;
+}
+
+.emergency{
+    background:#fff1f2;
+
+    border-left:
+    5px solid #dc2626;
+}
+
+.success{
+    color:#15803d;
+}
+
+.warning{
+    color:#b45309;
+}
+
+.danger{
+    color:#dc2626;
+}
+
+/* ================= TABLE ================= */
+
+table{
+    width:100%;
+
+    border-collapse:collapse;
+}
+
+th,
+td{
+    padding:10px;
+
+    border-bottom:
+    1px solid #eee;
+
+    text-align:left;
+
+    font-size:13px;
+}
+
+th{
+    color:#64748b;
+}
+
+/* ================= DARK MODE ================= */
+
+.dark{
+    background:#111827;
+
+    color:#f9fafb;
+}
+
+.dark .stat,
+.dark .controls,
+.dark .destination,
+.dark .panel,
+.dark .box{
+    background:#1f2937;
+
+    color:white;
+}
+
+.dark .stat h4{
+    color:#cbd5e1;
+}
+
+.dark input,
+.dark select{
+    background:#374151;
+    color:white;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:1100px){
+
+    .stats{
+        grid-template-columns:
+        repeat(4,1fr);
+    }
+
+    .main{
+        grid-template-columns:1fr;
+    }
+
+    .lower{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:700px){
+
+    .stats{
+        grid-template-columns:
+        repeat(2,1fr);
+    }
+
+    .map{
+        height:500px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+HEADER
+===================================================== -->
+
+<header>
+
+<div>
+
+<h1>
+🚌 Smart APSRTC
+</h1>
+
+<p>
+CSP-Based Intelligent Bus Communication System
+</p>
+
+<div class="clock">
+🕒 <span id="clock"></span>
+</div>
+
+</div>
+
+
+<div class="network">
+
+📶 CSP Network:
+<b>CONNECTED</b>
+
+</div>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- =====================================================
+STATISTICS
+===================================================== -->
+
+<div class="stats">
+
+<div class="stat">
+<h4>ACTIVE BUSES</h4>
+<div class="value" id="activeCount">
+10
+</div>
+</div>
+
+<div class="stat">
+<h4>OFFLINE</h4>
+<div class="value" id="offlineCount">
+0
+</div>
+</div>
+
+<div class="stat">
+<h4>DELAYED</h4>
+<div class="value" id="delayedCount">
+2
+</div>
+</div>
+
+<div class="stat">
+<h4>LATENCY</h4>
+<div class="value" id="latency">
+42 ms
+</div>
+</div>
+
+<div class="stat">
+<h4>PACKET LOSS</h4>
+<div class="value" id="packetLoss">
+0.4%
+</div>
+</div>
+
+<div class="stat">
+<h4>MESSAGES</h4>
+<div class="value" id="messages">
+1824
+</div>
+</div>
+
+<div class="stat">
+<h4>UPTIME</h4>
+<div class="value">
+99.4%
+</div>
+</div>
+
+</div>
+
+
+<!-- =====================================================
+SEARCH CONTROLS
+===================================================== -->
+
+<div class="controls">
+
+<input
+id="search"
+placeholder="🔍 Search bus..."
+oninput="filterBuses()"
+>
+
+
+<select
+id="routeFilter"
+onchange="filterBuses()"
+>
+
+<option value="ALL">
+All Routes
+</option>
+
+<option value="Vijayawada-Hyderabad">
+Vijayawada → Hyderabad
+</option>
+
+<option value="Guntur-Hyderabad">
+Guntur → Hyderabad
+</option>
+
+<option value="Visakhapatnam-Vijayawada">
+Visakhapatnam → Vijayawada
+</option>
+
+<option value="Tirupati-Vijayawada">
+Tirupati → Vijayawada
+</option>
+
+</select>
+
+
+<button
+class="green"
+onclick="showNearby()"
+>
+📍 Nearby Buses
+</button>
+
+
+<button
+class="blue"
+onclick="sendNotification()"
+>
+🔔 Notification
+</button>
+
+
+<button
+class="red"
+onclick="sendEmergency()"
+>
+🚨 SOS
+</button>
+
+
+<button
+class="gray"
+onclick="toggleDark()"
+>
+🌙 Dark Mode
+</button>
+
+</div>
+
+
+<!-- =====================================================
+DESTINATION NAVIGATION
+===================================================== -->
+
+<div class="destination">
+
+<h2>
+📍 Live Destination Navigation
+</h2>
+
+<p>
+Enter a destination. Your browser will attempt to obtain
+your current GPS location and Google Maps can then provide
+transit directions.
+</p>
+
+<div class="destination-row">
+
+<input
+id="destination"
+placeholder="Enter destination e.g. Hyderabad"
+>
+
+<button
+class="green"
+onclick="startNavigation()"
+>
+🧭 Navigate
+</button>
+
+<button
+class="blue"
+onclick="getMyLocation()"
+>
+📍 My Location
+</button>
+
+</div>
+
+
+<div
+id="locationStatus"
+style="
+margin-top:15px;
+padding:12px;
+background:#f1f5f9;
+border-radius:8px;
+"
+>
+
+📍 Location not detected yet.
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+MAIN MAP + BUS PANEL
+===================================================== -->
+
+<div class="main">
+
+
+<!-- ================= MAP ================= -->
+
+<div class="map">
+
+
+<div class="map-title">
+
+🗺️ Live APSRTC Map
+
+</div>
+
+
+<div class="road"></div>
+
+<div class="road2"></div>
+
+<div class="road3"></div>
+
+
+<div class="route"></div>
+
+
+<!-- STOPS -->
+
+<div
+class="stop"
+style="left:10%;top:55%"
+>
+
+<div class="stop-label">
+Vijayawada
+</div>
+
+</div>
+
+
+<div
+class="stop"
+style="left:28%;top:52%"
+>
+
+<div class="stop-label">
+Guntur
+</div>
+
+</div>
+
+
+<div
+class="stop"
+style="left:47%;top:48%"
+>
+
+<div class="stop-label">
+Chilakaluripet
+</div>
+
+</div>
+
+
+<div
+class="stop"
+style="left:66%;top:45%"
+>
+
+<div class="stop-label">
+Nalgonda
+</div>
+
+</div>
+
+
+<div
+class="stop"
+style="left:87%;top:40%"
+>
+
+<div class="stop-label">
+Hyderabad
+</div>
+
+</div>
+
+
+<!-- USER LOCATION -->
+
+<div
+id="userLocation"
+class="user-location"
+>
+</div>
+
+
+<!-- BUS MARKERS -->
+
+<div
+id="marker101"
+class="bus-marker"
+style="left:15%;top:54%"
+onclick="selectBus('AP-101')"
+>
+🚌 101
+</div>
+
+
+<div
+id="marker102"
+class="bus-marker"
+style="left:23%;top:52%"
+onclick="selectBus('AP-102')"
+>
+🚌 102
+</div>
+
+
+<div
+id="marker205"
+class="bus-marker delayed"
+style="left:33%;top:50%"
+onclick="selectBus('AP-205')"
+>
+🚌 205
+</div>
+
+
+<div
+id="marker206"
+class="bus-marker"
+style="left:40%;top:49%"
+onclick="selectBus('AP-206')"
+>
+🚌 206
+</div>
+
+
+<div
+id="marker310"
+class="bus-marker"
+style="left:50%;top:47%"
+onclick="selectBus('AP-310')"
+>
+🚌 310
+</div>
+
+
+<div
+id="marker311"
+class="bus-marker"
+style="left:57%;top:46%"
+onclick="selectBus('AP-311')"
+>
+🚌 311
+</div>
+
+
+<div
+id="marker401"
+class="bus-marker delayed"
+style="left:65%;top:44%"
+onclick="selectBus('AP-401')"
+>
+🚌 401
+</div>
+
+
+<div
+id="marker402"
+class="bus-marker"
+style="left:72%;top:43%"
+onclick="selectBus('AP-402')"
+>
+🚌 402
+</div>
+
+
+<div
+id="marker501"
+class="bus-marker"
+style="left:78%;top:41%"
+onclick="selectBus('AP-501')"
+>
+🚌 501
+</div>
+
+
+<div
+id="marker502"
+class="bus-marker"
+style="left:84%;top:40%"
+onclick="selectBus('AP-502')"
+>
+🚌 502
+</div>
+
+
+</div>
+
+
+<!-- ================= BUS PANEL ================= -->
+
+<div class="panel">
+
+<h2>
+🚌 Live Bus Fleet
+</h2>
+
+<div id="busList"></div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+LOWER INFORMATION
+===================================================== -->
+
+<div class="lower">
+
+
+<!-- COMMUNICATION -->
+
+<div class="box">
+
+<h2>
+💬 Communication Center
+</h2>
+
+
+<div class="message">
+
+<b>
+Control Room → Driver
+</b>
+
+<p>
+⚠️ Traffic congestion reported near Nalgonda.
+Please use the alternate route.
+</p>
+
+<small>
+✓ Delivered • 09:42
+</small>
+
+</div>
+
+
+<div class="message">
+
+<b>
+Driver AP-101 → Control Room
+</b>
+
+<p>
+✓ Route received. Changing route.
+</p>
+
+<small>
+✓ Delivered • 09:43
+</small>
+
+</div>
+
+
+<div class="message">
+
+<b>
+System
+</b>
+
+<p class="success">
+✓ All communication services operational.
+</p>
+
+</div>
+
+
+<button
+class="green"
+onclick="broadcastMessage()"
+>
+
+📢 Broadcast Message
+
+</button>
+
+</div>
+
+
+<!-- NETWORK -->
+
+<div class="box">
+
+<h2>
+📡 Network Monitoring
+</h2>
+
+
+<table>
+
+<tr>
+<td>Network</td>
+<td><b>4G / 5G</b></td>
+</tr>
+
+<tr>
+<td>Signal</td>
+<td id="signal">
+-68 dBm
+</td>
+</tr>
+
+<tr>
+<td>Latency</td>
+<td id="latency2">
+42 ms
+</td>
+</tr>
+
+<tr>
+<td>Packet Loss</td>
+<td id="loss2">
+0.4%
+</td>
+</tr>
+
+<tr>
+<td>Heartbeat</td>
+<td class="success">
+● ACTIVE
+</td>
+</tr>
+
+<tr>
+<td>Encryption</td>
+<td class="success">
+🔐 TLS ENABLED
+</td>
+</tr>
+
+<tr>
+<td>Server</td>
+<td class="success">
+🟢 ONLINE
+</td>
+</tr>
+
+</table>
+
+</div>
+
+
+<!-- ALERTS -->
+
+<div class="box">
+
+<h2>
+🚨 Alerts
+</h2>
+
+<div id="alerts">
+
+<div class="message emergency">
+
+<b>
+⚠️ Traffic Alert
+</b>
+
+<p>
+Route 101 experiencing moderate traffic.
+</p>
+
+</div>
+
+
+<div class="message">
+
+<b>
+📶 Network
+</b>
+
+<p>
+All communication channels operational.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+BUS ARRIVALS
+===================================================== -->
+
+<div
+class="box"
+style="margin-top:20px"
+>
+
+<h2>
+🚏 Next Bus Arrivals
+</h2>
+
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+Bus
+</th>
+
+<th>
+Stop
+</th>
+
+<th>
+ETA
+</th>
+
+<th>
+Traffic
+</th>
+
+<th>
+Network
+</th>
+
+<th>
+Occupancy
+</th>
+
+<th>
+Status
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="arrivalTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<!-- =====================================================
+ADMIN DASHBOARD
+===================================================== -->
+
+<div
+class="box"
+style="margin-top:20px"
+>
+
+<h2>
+🖥️ Admin Control Room
+</h2>
+
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+Bus
+</th>
+
+<th>
+Route
+</th>
+
+<th>
+Speed
+</th>
+
+<th>
+Occupancy
+</th>
+
+<th>
+Network
+</th>
+
+<th>
+Signal
+</th>
+
+<th>
+Status
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="adminTable">
+
+</tbody>
+
+</table>
+
+</div>
+
+
+<!-- =====================================================
+FAVORITES
+===================================================== -->
+
+<div
+class="box"
+style="margin-top:20px"
+>
+
+<h2>
+⭐ Favorite Routes
+</h2>
+
+
+<button
+class="orange"
+onclick="favoriteRoute('Vijayawada-Hyderabad')"
+>
+
+⭐ Vijayawada → Hyderabad
+
+</button>
+
+
+<button
+class="orange"
+onclick="favoriteRoute('Guntur-Hyderabad')"
+>
+
+⭐ Guntur → Hyderabad
+
+</button>
+
+
+<button
+class="orange"
+onclick="favoriteRoute('Tirupati-Vijayawada')"
+>
+
+⭐ Tirupati → Vijayawada
+
+</button>
+
+
+<p id="favoriteMessage">
+No route selected.
+</p>
+
+</div>
+
+
+<!-- =====================================================
+SECURITY + MAINTENANCE
+===================================================== -->
+
+<div class="lower">
+
+
+<div class="box">
+
+<h2>
+🔐 Security
+</h2>
+
+<p>
+Authenticated buses:
+<b>10</b>
+</p>
+
+<p>
+Encrypted connections:
+<span class="success">
+10/10
+</span>
+</p>
+
+<p>
+Failed login attempts:
+<b>2</b>
+</p>
+
+<p>
+Unknown devices:
+<span class="success">
+0
+</span>
+</p>
+
+</div>
+
+
+<div class="box">
+
+<h2>
+🛠️ Maintenance
+</h2>
+
+<p>
+AP-101 Engine:
+🟢 Good
+</p>
+
+<p>
+AP-205 GPS:
+🟢 Good
+</p>
+
+<p>
+AP-310 Battery:
+🟡 Check Soon
+</p>
+
+<p>
+AP-401 Service:
+⚠️ Due Soon
+</p>
+
+</div>
+
+
+<div class="box">
+
+<h2>
+📊 System Health
+</h2>
+
+<p>
+GPS:
+<span class="success">
+● ONLINE
+</span>
+</p>
+
+<p>
+Communication Server:
+<span class="success">
+● ONLINE
+</span>
+</p>
+
+<p>
+Database:
+<span class="success">
+● ONLINE
+</span>
+</p>
+
+<p>
+Notification Service:
+<span class="success">
+● ONLINE
+</span>
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<!-- =====================================================
+JAVASCRIPT
+===================================================== -->
+
+<script>
+
+
+/* ======================================================
+BUS DATABASE
+====================================================== */
+
+const buses = [
+
+{
+id:"AP-101",
+route:"Vijayawada-Hyderabad",
+stop:"Guntur",
+speed:58,
+eta:18,
+occupancy:62,
+capacity:80,
+network:"4G",
+signal:-68,
+status:"ACTIVE",
+traffic:"LOW",
+x:15
+},
+
+{
+id:"AP-102",
+route:"Vijayawada-Hyderabad",
+stop:"Guntur",
+speed:52,
+eta:22,
+occupancy:70,
+capacity:80,
+network:"4G",
+signal:-72,
+status:"ACTIVE",
+traffic:"MODERATE",
+x:23
+},
+
+{
+id:"AP-205",
+route:"Vijayawada-Hyderabad",
+stop:"Chilakaluripet",
+speed:42,
+eta:27,
+occupancy:74,
+capacity:80,
+network:"4G",
+signal:-81,
+status:"DELAYED",
+traffic:"HIGH",
+x:33
+},
+
+{
+id:"AP-206",
+route:"Vijayawada-Hyderabad",
+stop:"Chilakaluripet",
+speed:55,
+eta:21,
+occupancy:45,
+capacity:80,
+network:"5G",
+signal:-61,
+status:"ACTIVE",
+traffic:"LOW",
+x:40
+},
+
+{
+id:"AP-310",
+route:"Guntur-Hyderabad",
+stop:"Nalgonda",
+speed:63,
+eta:12,
+occupancy:51,
+capacity:80,
+network:"5G",
+signal:-59,
+status:"ACTIVE",
+traffic:"LOW",
+x:50
+},
+
+{
+id:"AP-311",
+route:"Guntur-Hyderabad",
+stop:"Nalgonda",
+speed:47,
+eta:19,
+occupancy:68,
+capacity:80,
+network:"4G",
+signal:-75,
+status:"ACTIVE",
+traffic:"MODERATE",
+x:57
+},
+
+{
+id:"AP-401",
+route:"Visakhapatnam-Vijayawada",
+stop:"Vijayawada",
+speed:38,
+eta:31,
+occupancy:72,
+capacity:80,
+network:"4G",
+signal:-84,
+status:"DELAYED",
+traffic:"HIGH",
+x:65
+},
+
+{
+id:"AP-402",
+route:"Visakhapatnam-Vijayawada",
+stop:"Vijayawada",
+speed:60,
+eta:14,
+occupancy:38,
+capacity:80,
+network:"5G",
+signal:-63,
+status:"ACTIVE",
+traffic:"LOW",
+x:72
+},
+
+{
+id:"AP-501",
+route:"Tirupati-Vijayawada",
+stop:"Vijayawada",
+speed:56,
+eta:16,
+occupancy:57,
+capacity:80,
+network:"4G",
+signal:-70,
+status:"ACTIVE",
+traffic:"MODERATE",
+x:78
+},
+
+{
+id:"AP-502",
+route:"Tirupati-Vijayawada",
+stop:"Vijayawada",
+speed:64,
+eta:11,
+occupancy:35,
+capacity:80,
+network:"5G",
+signal:-57,
+status:"ACTIVE",
+traffic:"LOW",
+x:84
+
+}
+
+];
+
+
+/* ======================================================
+FORMAT ROUTE
+====================================================== */
+
+function formatRoute(route){
+
+return route.replaceAll("-"," → ");
+
+}
+
+
+/* ======================================================
+BUS LIST
+====================================================== */
+
+function renderBuses(list=buses){
+
+const container =
+document.getElementById("busList");
+
+container.innerHTML="";
+
+
+list.forEach(bus=>{
+
+const statusClass =
+bus.status.toLowerCase();
+
+
+container.innerHTML += `
+
+<div class="bus-card">
+
+<div class="bus-title">
+
+🚌 ${bus.id}
+
+<span class="badge ${statusClass}">
+${bus.status}
+</span>
+
+</div>
+
+
+<p>
+Route:
+<b>${formatRoute(bus.route)}</b>
+</p>
+
+
+<p>
+🚏 Next Stop:
+<b>${bus.stop}</b>
+</p>
+
+
+<p>
+⏱️ ETA:
+<b>${bus.eta} minutes</b>
+</p>
+
+
+<p>
+⚡ Speed:
+<b>${bus.speed} km/h</b>
+</p>
+
+
+<p>
+📶 ${bus.network}
+&nbsp;
+${bus.signal} dBm
+</p>
+
+
+<p>
+👥 Occupancy:
+<b>
+${bus.occupancy}/${bus.capacity}
+</b>
+</p>
+
+
+<div class="progress">
+
+<div
+class="progress-bar"
+style="
+width:
+${bus.occupancy/bus.capacity*100}%
+"
+>
+</div>
+
+</div>
+
+
+<p>
+🚦 Traffic:
+<b>
+${bus.traffic}
+</b>
+</p>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+/* ======================================================
+SEARCH
+====================================================== */
+
+function filterBuses(){
+
+const search =
+document.getElementById("search")
+.value
+.toLowerCase();
+
+
+const route =
+document.getElementById("routeFilter")
+.value;
+
+
+const result =
+buses.filter(bus=>{
+
+const searchMatch =
+bus.id
+.toLowerCase()
+.includes(search);
+
+
+const routeMatch =
+route==="ALL" ||
+bus.route===route;
+
+
+return searchMatch &&
+routeMatch;
+
+});
+
+
+renderBuses(result);
+
+}
+
+
+/* ======================================================
+MOVE BUS
+====================================================== */
+
+function moveBuses(){
+
+buses.forEach(bus=>{
+
+if(bus.status==="OFFLINE")
+return;
+
+
+bus.x += 0.25;
+
+
+if(bus.x>90){
+
+bus.x=10;
+
+}
+
+
+const number =
+bus.id.split("-")[1];
+
+
+const marker =
+document.getElementById(
+"marker"+number
+);
+
+
+if(marker){
+
+marker.style.left =
+bus.x+"%";
+
+}
+
+});
+
+}
+
+
+/* ======================================================
+NETWORK
+====================================================== */
+
+function networkSimulation(){
+
+const latency =
+Math.floor(
+30+
+Math.random()*60
+);
+
+
+const loss =
+(
+Math.random()*1.5
+)
+.toFixed(1);
+
+
+const signal =
+-60-
+Math.floor(
+Math.random()*30
+);
+
+
+document.getElementById(
+"latency"
+).innerText =
+latency+" ms";
+
+
+document.getElementById(
+"latency2"
+).innerText =
+latency+" ms";
+
+
+document.getElementById(
+"packetLoss"
+).innerText =
+loss+"%";
+
+
+document.getElementById(
+"loss2"
+).innerText =
+loss+"%";
+
+
+document.getElementById(
+"signal"
+).innerText =
+signal+" dBm";
+
+
+const messageElement =
+document.getElementById(
+"messages"
+);
+
+
+messageElement.innerText =
+parseInt(
+messageElement.innerText
+)
++
+Math.floor(
+Math.random()*8
+);
+
+}
+
+
+/* ======================================================
+SPEED + OCCUPANCY
+====================================================== */
+
+function updateBusData(){
+
+buses.forEach(bus=>{
+
+if(bus.status==="OFFLINE")
+return;
+
+
+bus.speed =
+Math.floor(
+35+
+Math.random()*35
+);
+
+
+bus.occupancy =
+Math.floor(
+25+
+Math.random()*55
+);
+
+
+bus.eta =
+Math.max(
+5,
+Math.floor(
+bus.eta+
+(Math.random()*4-2)
+)
+);
+
+
+});
+
+
+renderBuses();
+
+renderArrivals();
+
+renderAdmin();
+
+}
+
+
+/* ======================================================
+CLOCK
+====================================================== */
+
+function updateClock(){
+
+document.getElementById(
+"clock"
+).innerText =
+new Date()
+.toLocaleString();
+
+}
+
+
+/* ======================================================
+ARRIVALS
+====================================================== */
+
+function renderArrivals(){
+
+const table =
+document.getElementById(
+"arrivalTable"
+);
+
+
+table.innerHTML="";
+
+
+buses
+.slice(0,8)
+.forEach(bus=>{
+
+table.innerHTML += `
+
+<tr>
+
+<td>
+🚌 ${bus.id}
+</td>
+
+<td>
+${bus.stop}
+</td>
+
+<td>
+<b>${bus.eta} min</b>
+</td>
+
+<td>
+${bus.traffic}
+</td>
+
+<td>
+${bus.network}
+</td>
+
+<td>
+${bus.occupancy}/${bus.capacity}
+</td>
+
+<td>
+${bus.status}
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+
+/* ======================================================
+ADMIN
+====================================================== */
+
+function renderAdmin(){
+
+const table =
+document.getElementById(
+"adminTable"
+);
+
+
+table.innerHTML="";
+
+
+buses.forEach(bus=>{
+
+table.innerHTML += `
+
+<tr>
+
+<td>
+${bus.id}
+</td>
+
+<td>
+${formatRoute(bus.route)}
+</td>
+
+<td>
+${bus.speed} km/h
+</td>
+
+<td>
+${bus.occupancy}/${bus.capacity}
+</td>
+
+<td>
+${bus.network}
+</td>
+
+<td>
+${bus.signal} dBm
+</td>
+
+<td>
+${bus.status}
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+
+/* ======================================================
+SELECT BUS
+====================================================== */
+
+function selectBus(id){
+
+const bus =
+buses.find(
+item=>item.id===id
+);
+
+
+if(!bus)
+return;
+
+
+alert(
+
+"🚌 BUS INFORMATION\n\n"+
+
+"Bus: "+
+bus.id+
+"\n"+
+
+"Route: "+
+formatRoute(bus.route)+
+"\n"+
+
+"Next Stop: "+
+bus.stop+
+"\n"+
+
+"ETA: "+
+bus.eta+
+" minutes\n"+
+
+"Speed: "+
+bus.speed+
+" km/h\n"+
+
+"Traffic: "+
+bus.traffic+
+"\n"+
+
+"Occupancy: "+
+bus.occupancy+
+"/"+
+bus.capacity+
+"\n"+
+
+"Network: "+
+bus.network+
+"\n"+
+
+"Signal: "+
+bus.signal+
+" dBm\n\n"+
+
+"Communication: SECURE"
+
+);
+
+}
+
+
+/* ======================================================
+NEARBY
+====================================================== */
+
+function showNearby(){
+
+let text =
+"📍 BUSES NEAR YOU\n\n";
+
+
+buses
+.slice(0,5)
+.forEach(bus=>{
+
+text +=
+"🚌 "+
+bus.id+
+" — "+
+bus.eta+
+" min\n";
+
+});
+
+
+alert(text);
+
+}
+
+
+/* ======================================================
+NOTIFICATION
+====================================================== */
+
+function sendNotification(){
+
+document.getElementById(
+"alerts"
+).innerHTML = `
+
+<div class="message">
+
+<b>
+🔔 Passenger Notification
+</b>
+
+<p>
+AP-101 is 2 stops away
+from Guntur Bus Stop.
+</p>
+
+<small>
+✓ Notification sent
+</small>
+
+</div>
+
+`+
+document.getElementById(
+"alerts"
+).innerHTML;
+
+
+alert(
+"🔔 Passenger notification sent!"
+);
+
+}
+
+
+/* ======================================================
+SOS
+====================================================== */
+
+function sendEmergency(){
+
+const confirmEmergency =
+confirm(
+
+"🚨 EMERGENCY ALERT\n\n"+
+
+"Bus: AP-101\n"+
+
+"Share current GPS location with Control Room?"
+
+);
+
+
+if(!confirmEmergency)
+return;
+
+
+document.getElementById(
+"alerts"
+).innerHTML = `
+
+<div class="message emergency">
+
+<b>
+🚨 CRITICAL EMERGENCY
+</b>
+
+<p>
+Bus AP-101 has triggered
+an SOS alert.
+</p>
+
+<p>
+📍 GPS location shared.
+</p>
+
+<p>
+📡 Priority communication activated.
+</p>
+
+</div>
+
+`+
+document.getElementById(
+"alerts"
+).innerHTML;
+
+
+alert(
+"🚨 Emergency alert sent to Control Room!"
+);
+
+}
+
+
+/* ======================================================
+BROADCAST
+====================================================== */
+
+function broadcastMessage(){
+
+const message =
+prompt(
+"Enter message for all passengers:"
+);
+
+
+if(!message)
+return;
+
+
+document.getElementById(
+"alerts"
+).innerHTML = `
+
+<div class="message">
+
+<b>
+📢 CONTROL ROOM BROADCAST
+</b>
+
+<p>
+${message}
+</p>
+
+<small>
+✓ Broadcast delivered
+</small>
+
+</div>
+
+`+
+document.getElementById(
+"alerts"
+).innerHTML;
+
+
+alert(
+"📢 Broadcast sent!"
+);
+
+}
+
+
+/* ======================================================
+FAVORITE ROUTE
+====================================================== */
+
+function favoriteRoute(route){
+
+document.getElementById(
+"favoriteMessage"
+).innerHTML =
+
+"⭐ Favorite route selected: <b>"+
+formatRoute(route)+
+"</b>";
+
+}
+
+
+/* ======================================================
+DARK MODE
+====================================================== */
+
+function toggleDark(){
+
+document.body
+.classList.toggle("dark");
+
+}
+
+
+/* ======================================================
+GPS LOCATION
+====================================================== */
+
+let userLatitude=null;
+let userLongitude=null;
+
+
+function getMyLocation(){
+
+const status =
+document.getElementById(
+"locationStatus"
+);
+
+
+if(!navigator.geolocation){
+
+status.innerHTML =
+"❌ Geolocation is not supported.";
+
+return;
+
+}
+
+
+status.innerHTML =
+"📡 Detecting GPS location...";
+
+
+navigator.geolocation.getCurrentPosition(
+
+function(position){
+
+userLatitude =
+position.coords.latitude;
+
+userLongitude =
+position.coords.longitude;
+
+
+const accuracy =
+Math.round(
+position.coords.accuracy
+);
+
+
+status.innerHTML = `
+
+<b>
+📍 Current Location
+</b>
+
+<br><br>
+
+Latitude:
+${userLatitude.toFixed(6)}
+
+<br>
+
+Longitude:
+${userLongitude.toFixed(6)}
+
+<br>
+
+GPS Accuracy:
+${accuracy} meters
+
+<br><br>
+
+🟢 GPS Connected
+
+`;
+
+
+/*
+Display approximate position
+on our project map.
+
+This is only a visual
+demonstration because the
+map is not geographically
+scaled.
+*/
+
+const userMarker =
+document.getElementById(
+"userLocation"
+);
+
+
+userMarker.style.display=
+"block";
+
+
+/*
+Place marker approximately
+on map.
+
+*/
+
+const x =
+10+
+(
+Math.abs(userLongitude)%1
+)*70;
+
+
+const y =
+35+
+(
+Math.abs(userLatitude)%1
+)*30;
+
+
+userMarker.style.left=
+x+"%";
+
+
+userMarker.style.top=
+y+"%";
+
+},
+
+function(error){
+
+status.innerHTML =
+
+"❌ Location permission denied or unavailable.<br><br>"+
+
+"Please allow location access in your browser.";
+
+},
+
+{
+
+enableHighAccuracy:true,
+
+timeout:10000,
+
+maximumAge:5000
+
+}
+
+);
+
+}
+
+
+/* ======================================================
+GOOGLE MAPS NAVIGATION
+====================================================== */
+
+function startNavigation(){
+
+const destination =
+document
+.getElementById(
+"destination"
+)
+.value
+.trim();
+
+
+if(destination===""){
+
+alert(
+"Please enter a destination."
+);
+
+return;
+
+}
+
+
+/*
+
+Google Maps Directions URL.
+
+The destination is user supplied.
+
+Transit mode is requested.
+
+*/
+
+const url =
+
+"https://www.google.com/maps/dir/?api=1"+
+"&destination="+
+encodeURIComponent(destination)+
+"&travelmode=transit";
+
+
+window.open(
+url,
+"_blank"
+);
+
+}
+
+
+/* ======================================================
+INITIALIZE
+====================================================== */
+
+renderBuses();
+
+renderArrivals();
+
+renderAdmin();
+
+updateClock();
+
+
+/* ======================================================
+LIVE SIMULATION
+====================================================== */
+
+setInterval(
+moveBuses,
+1000
+);
+
+
+setInterval(
+networkSimulation,
+2000
+);
+
+
+setInterval(
+updateBusData,
+5000
+);
+
+
+setInterval(
+updateClock,
+1000
+);
+
+</script>
+
+</body>
+
+</html>
